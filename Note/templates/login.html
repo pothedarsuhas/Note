@@ -1,10 +1,43 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% macro render_field(field) %}
+<tr {% if field.error %} class = "error" {% endif %}>
+    <td> {{field.label}} </td>
+    <td> {{field(**kwargs) | safe }}</td>
+</tr>
+<tr class="error">
+    <td></td>
+    <td>
+        <ul>
+            {% for error in field.errors %}
+            <li> {{ error }} </li>
+            {% endfor %}
+        </ul>
+    </td>
+</tr>
+{% endmacro %}
 
-</body>
-</html>
+{% block title %}
+<title>Home | Sign in</title>
+{% endblock %}
+
+{% block content %}
+<article>
+    <h1 style="clear:both">  Please Sign in</h1>
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <table>
+            {{ render_field(form.email, size = 50) }}
+            {{ render_field(form.password, size = 50) }}
+            {{ render_field(form.remember_me) }}
+            <tr class="submit">
+                <td></td>
+                <td><button type="submit">Sign in</td>
+            </tr>
+        </table>
+    </form>
+</article>
+{% endblock %}
+
+{% block aside %}
+<p> Notes will be available after login.</p>
+{% endblock %}

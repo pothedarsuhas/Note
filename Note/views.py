@@ -1,5 +1,9 @@
-from flask import Flask, render_template, url_for
-from flask_login import current_user, login_required
+from flask import render_template, url_for, flash, redirect
+from flask_login import login_required, login_user
+from .forms import LoginForm, SignupForm, AddNoteForm
+
+from . import app, lm
+from .models import user, note
 
 from . import app, lm
 from .models import user, note
@@ -9,16 +13,31 @@ def load_user(user_id):
     return user.get(user_id)
 
 @app.route('/')
-def hello_world():
+def index():
     return render_template('index.html')
 
-@app.route('/signup')
+@app.route('/signup', methods=['POST', 'GET'])
 def signup():
-    return render_template('signup.html')
+    form = SignupForm()
+    if form.validate_on_submit():
+        new = user(username = form.username.data, email = form.email.data, password = form.password.data)
+        new.save()
+        flash("Registration was successful")
+        return redirect(url_for('login'))
+    return render_template('signup.html', form = form)
 
-@app.route('/login')
+@app.route('/login', methods=['POST', 'GET'])
 def login():
-    return render_template('login.html')
+    form = LoginForm()
+    if form.validate_on_submit():
+        userName = user.get_by_email(form.email.data)
+        if userName is not None and user.check_password(form.password.data):
+            login_user(userName, form.remember_me.data)
+            flash("Login successful.")
+            return redirect(url_for('home'))
+        else:
+            flash("Login failed.")
+    return render_template('login.html', form = form)
 
 @login_required
 @app.route('/home')
