@@ -18,11 +18,12 @@
                         {% if current_user.is_authenticated %}
                             <li><a href="{{url_for('home')}}">HOME</a></li>
                             <li><a href="{{url_for('add')}}">NEW NOTE</a></li>
-                            <li><a href="#">SIGN OUT</a></li>
+                            <li><a href="{{url_for('logout')}}">SIGN OUT</a></li>
 
                         {% else %}
                             <li><a href="{{url_for('login')}}">SIGN IN</a></li>
                             <li><a href="{{url_for('signup')}}">SIGN UP</a></li>
+
                         {% endif %}
                     </ul>
                 </nav>

@@ -138,6 +138,7 @@ nav a:hover {
 }
 
 .footer-container footer {
+
     color: white;
     padding: 20px 0;
 }
@@ -148,6 +149,12 @@ nav a:hover {
 
 .ie7 .title {
     padding-top: 20px;
+}
+
+.footer-container {
+    position: fixed;
+    width: 100%;
+    bottom: 0;
 }
 
 /* ==========================================================================
@@ -286,7 +293,7 @@ nav a:hover {
     height: auto;
     margin: 0;
     overflow: visible;
-    position: static;
+    position: absolute;
     width: auto;
 }
 

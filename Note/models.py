@@ -12,7 +12,7 @@ class user(db.Model, UserMixin):
     username string
     email string
     '''
-    id = db.Column(db.Integer, primary_key=True)
+    userid = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(120))
     email = db.Column(db.String(120), unique=True, nullable=False)
@@ -22,11 +22,14 @@ class user(db.Model, UserMixin):
         db.session.add(self)
         db.session.commit()
 
+    # def get_id(self, id):
+    #     return self.id
+
     def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
+        self.password = generate_password_hash(password)
 
     def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
+        return check_password_hash(self.password, password)
 
     @staticmethod
     def get_by_email(email):
@@ -36,6 +39,9 @@ class user(db.Model, UserMixin):
         self.username = username
         self.email = email
         self.set_password(password)
+
+    def get_id(self):
+        return (self.userid)
 
 
 class note(db.Model):
@@ -49,16 +55,15 @@ class note(db.Model):
     title = db.Column(db.String(120))
     content = db.Column(db.Text)
     last_modified = db.Column(db.Date)
-    userid = db.Column(db.Integer, db.ForeignKey(user.id))
+    userid = db.Column(db.Integer, db.ForeignKey(user.userid))
 
     def save(self):
-        db.session.add()
+        db.session.add(self)
         db.session.commit()
 
-    def __init__(self, title, content, last_modified, userid):
+    def __init__(self, title, content, userid):
         self.title = title
         self.content = content
-        self.last_modified = last_modified
         self.userid = userid
 
 db.create_all()

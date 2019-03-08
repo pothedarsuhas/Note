@@ -1,16 +1,13 @@
 from flask import render_template, url_for, flash, redirect
-from flask_login import login_required, login_user
+from flask_login import login_required, login_user, logout_user, current_user
 from .forms import LoginForm, SignupForm, AddNoteForm
 
 from . import app, lm
-from .models import user, note
-
-from . import app, lm
-from .models import user, note
+from models import user, note
 
 @lm.user_loader
 def load_user(user_id):
-    return user.get(user_id)
+    return user.query.filter_by().first()
 
 @app.route('/')
 def index():
@@ -31,7 +28,7 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         userName = user.get_by_email(form.email.data)
-        if userName is not None and user.check_password(form.password.data):
+        if userName is not None and userName.check_password(form.password.data):
             login_user(userName, form.remember_me.data)
             flash("Login successful.")
             return redirect(url_for('home'))
@@ -42,14 +39,30 @@ def login():
 @login_required
 @app.route('/home')
 def home():
-    return render_template('home.html')
+    notes = note.query.filter_by(userid = current_user.userid)
+    return render_template('home.html', notes = notes)
 
 @login_required
-@app.route('/add')
+@app.route('/add', methods = ['GET', 'POST'])
 def add():
-    return render_template('new.html')
+    form = AddNoteForm()
+    Notes = note.query.filter_by(userid=current_user.userid).first()
+    if form.validate_on_submit():
+        new = note(title=form.title.data, content=form.content.data, userid=current_user.userid)
+        new.save()
+        flash('Note created successfully')
+        return redirect(url_for('home'))
+    return render_template('new.html', form = form, Notes = Notes)
 
 @login_required
-@app.route('/view')
-def view():
-    return render_template('note.html')
+@app.route('/view/<id>')
+def view(id):
+    notes = note.query.get(id)
+    Notes = note.query.filter_by(userid = current_user.userid).all()
+    return render_template('note.html', note = notes, Notes = Notes)
+
+@login_required
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('index'))

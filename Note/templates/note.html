@@ -1,10 +1,25 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'base.html' %}
 
-</body>
-</html>
+{% block title %}
+Note | {{ note.title }}
+{% endblock %}
+
+{% block content %}
+<article>
+    <header>
+       <h1> {{ note.title }} </h1>
+        <p> {{note.content}} </p>
+
+    </header>
+</article>
+{% endblock %}
+
+
+{% block aside %}
+
+<section>
+{% for Note in Notes %}
+    <li> <a href = "{{ url_for('view',id = Note.id) }}">{{ Note.title }}</a> </li>
+{% endfor %}
+</section>
+{% endblock %}
