@@ -7,7 +7,7 @@ from models import user, note
 
 @lm.user_loader
 def load_user(user_id):
-    return user.query.filter_by().first()
+    return user.query.filter_by(userid = user_id).first()
 
 @app.route('/')
 def index():
@@ -58,11 +58,12 @@ def add():
 @app.route('/view/<id>')
 def view(id):
     notes = note.query.get(id)
-    Notes = note.query.filter_by(userid = current_user.userid).all()
+    Notes = note.query.filter_by(userid = current_user.userid)
     return render_template('note.html', note = notes, Notes = Notes)
 
 @login_required
 @app.route('/logout')
 def logout():
     logout_user()
+    login()
     return redirect(url_for('index'))
